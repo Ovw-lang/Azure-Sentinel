@@ -1,7 +1,7 @@
 # AS-MDE-Unisolate-Machine
 
 Author: Accelerynt
-
+s
 For any technical questions, please contact info@accelerynt.com  
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FPlaybooks%2FAS-MDE-Unisolate-Machine%2Fazuredeploy.json)
@@ -19,6 +19,7 @@ The following items are required under the template settings during deployment:
 
 * A Microsoft Azure Active Directory [app registration](https://github.com/Azure/Azure-Sentinel/tree/master/Playbooks/AS-MDE-Unisolate-Machine#create-an-app-registration) with admin consent granted for "**Machine.Isolate**" in the "**WindowsDefenderATP**" API
 * An [Azure key vault secret](https://github.com/Azure/Azure-Sentinel/tree/master/Playbooks/AS-MDE-Unisolate-Machine#create-an-azure-key-vault-secret) containing your app registration client secret
+* The **“Connect incidents & alerts”** option must be enabled in the **Microsoft Defender XDR** data connector configuration. Without this, hosts cannot be translated into their corresponding Device IDs.  
 
 
 > **Note**
@@ -81,7 +82,7 @@ Choose a name for the secret, such as "**AS-MDE-Isolate-Machine--AR-Client-Secre
 
 ![UnisolateMachine_Key_Vault_2](Images/UnisolateMachine_Key_Vault_2.png)
 
-Once your secret has been added to the vault, navigate to the "**Access policies**" menu option. Leave this page open, as you will need to return to it once the playbook has been deployed. See [Granting Access to Azure Key Vault](https://github.com/Azure/Azure-Sentinel/tree/master/Playbooks/AS-MDE-Unisolate-Machine#granting-access-to-azure-key-vault).
+Once your secret has been added to the vault, navigate to the "**Access control (IAM)**" menu option. Leave this page open, as you will need to return to it once the playbook has been deployed. See [Granting Access to Azure Key Vault](https://github.com/Azure/Azure-Sentinel/tree/master/Playbooks/AS-MDE-Unisolate-Machine#granting-access-to-azure-key-vault).
 
 ![UnisolateMachine_Key_Vault_3](Images/UnisolateMachine_Key_Vault_3.png)
 
@@ -129,9 +130,9 @@ Click the one corresponding to the Logic App.
 
 
 #
-### Microsoft Sentinel Contributor Role
+### Microsoft Sentinel Responder Role
 
-After deployment, you will need to give the system assigned managed identity the "**Microsoft Sentinel Contributor**" role. This will enable it to add comments to incidents. Navigate to the Log Analytics Workspaces page and select the same workspace the playbook is located in:
+After deployment, you will need to give the system assigned managed identity the "**Microsoft Sentinel Responder**" role. This will enable it to add comments to incidents. Navigate to the Log Analytics Workspaces page and select the same workspace the playbook is located in:
 
 https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.OperationalInsights%2Fworkspaces
 
@@ -139,7 +140,7 @@ Select the "**Access control (IAM)**" option from the menu blade, then click "**
 
 ![UnisolateMachine_Add_Contributor_Role_1](Images/UnisolateMachine_Add_Contributor_Role_1.png)
 
-Select the "**Microsoft Sentinel Contributor**" role, then click "**Next**".
+Select the "**Microsoft Sentinel Responder**" role, then click "**Next**".
 
 ![UnisolateMachine_Add_Contributor_Role_2](Images/UnisolateMachine_Add_Contributor_Role_2.png)
 
@@ -157,18 +158,10 @@ Continue on to the "**Review + assign**" tab and click "**Review + assign**".
 
 Before the Logic App can run successfully, the key vault connection created during deployment must be granted access to the key vault storing your app registration client secret.
 
-From the key vault "**Access policies**" page, click "**Create**".
+Select the "**Access control (IAM)**" option from the menu blade, then click "**Add role assignment**".
 
-![UnisolateMachine_Key_Vault_Access_1](Images/UnisolateMachine_Key_Vault_Access_1.png)
+Select the "**Key vault Secrets User**" role, then click "**Next**".
 
-Select the "**Get**" checkbox under "**Secret permissions**", then click "**Next**".
-
-![UnisolateMachine_Key_Vault_Access_2](Images/UnisolateMachine_Key_Vault_Access_2.png)
-
-Paste "**AS-MDE-Unisolate-Machine**" into the principal search box and click the option that appears. Click "**Next**" towards the bottom of the page.
-
-![UnisolateMachine_Key_Vault_Access_3](Images/UnisolateMachine_Key_Vault_Access_3.png)
+Select the "**Managed identity**" option, then click "**Select Members**". Under the subscription the logic app is located, set the value of "**Managed identity**" to "**Logic app**". Next, enter "**AS-MDE-Unisolate-Machine**", or the alternative playbook name used during deployment, in the field labeled "**Select**". Select the playbook, then click "**Select**".
 
 Navigate to the "**Review + create**" section and click "**Create**".
-
-![UnisolateMachine_Key_Vault_Access_4](Images/UnisolateMachine_Key_Vault_Access_4.png)
